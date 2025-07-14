@@ -12,6 +12,6 @@ app.use('/restaurants', resturantsRouter);
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 })
-.on('errror', (err) =>{
+.on('errror', (err: any) =>{
     throw new Error(err.message);  
 })

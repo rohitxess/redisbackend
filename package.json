@@ -1,0 +1,15 @@
+{
+  "name": "redisbackend",
+  "version": "1.0.0",
+  "description": "package file for the backend ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "zod": "^4.0.5"
+  }
+}

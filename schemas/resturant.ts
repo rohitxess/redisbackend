@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
-export const resturantSchema = z.object({
+// zod schema for restaurant 
+
+export const ResturantSchema = z.object({
     name: z.string().min(1),
     location: z.string().min(1),
     cuisines: z.array(z.string()).min(1),
@@ -20,5 +22,5 @@ export const ResturantDetailsSchema = z.object({
 
 // exporting the types
 
-export type Resturant = z.infer<typeof resturantSchema>;
+export type Resturant = z.infer<typeof ResturantSchema>;
 export type ResturantDetails = z.infer<typeof ResturantDetailsSchema>;
