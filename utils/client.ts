@@ -4,7 +4,7 @@ let client: RedisClientType | null = null;
 
 export async function initializedRedisClient() {
     if (!client) {
-        client = createClient();
+        client = createClient(); // by default it connects to localhost:6379
         client.on('error', (error) => {
             console.error(error);
         })

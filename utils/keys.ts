@@ -2,5 +2,8 @@
 // bites: restaurant: hhhius
 
 export function getKeyName(...args: string[]) {
-
+    return `bites: ${args.join(':')}`;
 }
+
+
+export const resturantKeyById = (id: string) => getKeyName('restaurants', id);
