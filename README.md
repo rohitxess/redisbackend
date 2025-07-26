@@ -34,3 +34,9 @@ Implement cache invalidation by setting appropriate expiration times and automat
 Real-Time Features with WebSockets
 
 Integrate Socket.IO to add real-time functionalities like live chat, notifications, or live updates of reviews.
+
+
+//middlewares - to check if the restaurant exisits and for error handling 
+// setting up the routes for cuisines and restaurant 
+//zod - defining the schema through zod validation 
+//redis client 

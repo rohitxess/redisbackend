@@ -14,7 +14,7 @@ export const checkRestaurantId = async (req: Request, res: Response, next: NextF
     const exists = await client.exists(restaurantKey);
     if (!exists) {
         return errorResponse(res, 404, `Restaurant with ID ${restaurantId} not found`);
-    }
+    } 
 
     next();
 }
