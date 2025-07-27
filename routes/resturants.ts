@@ -14,13 +14,19 @@ import { UNSAFE_ErrorResponseImpl } from 'react-router-dom';
 
 const router = express.Router();
 
-router.post('/', validate(ResturantSchema), async (res, req) => {
+router.post('/', validate(ResturantSchema), async (res, req, next) => {
     const data = req.body as Restaurant;
     try{
         const client = await initializedRedisClient();
         const resturantKey = resturantKeyById(restaurantId);
         const hashdata = {id, name: data.name, location: data.location};
-        const addResult = await client.hSet(resturantKey, hashdata);
+        await Promise.all[
+            ...data.cuisines.map(cuisine => Promise.all([
+                client.sAdd(cuisinesKey, cuisine),
+                client.sAdd(cuisineKey(cuisine), id),
+                client.sAdd(restaurantCuisinesKeyById(id), cuisine)
+            ]),)
+            client.hSet(resturantKey, hashdata]);
 
         return successResponse(res, hashData, 'Added new restaurant');
 
@@ -30,6 +36,23 @@ router.post('/', validate(ResturantSchema), async (res, req) => {
  ;
 })
 
+
+router.get('/:resturantId', checkRestaurantExists, async (req: Request< resturantID: string>, res, next) => {   
+
+    const  {resturantId } = req.params;
+    try{
+        const client = await initializedRedisClient();
+        const restaurantKey = resturantKeyById(resturantId);
+        const [viewCount, restaurant, cuisines] = await Promise.all([
+            client.hIncrBy(restaurantKey, 'viewCount', 1),
+            client.hGetAll(restaurantKey)],
+            client.sMembers(restaurantCuisinesKeyById(resturantId)),
+        ); 
+        return successResponse(res, { ...restaurant, cuisines });
+    } catch(error) {
+        next(error);
+    }   
+});
 
 
 router.post('/:restaurantId/reviews', checkRestaurantExisit, validate(ReviewSchema), async(req: Request<restuaurantId: string>, res, next) => {
@@ -103,17 +126,6 @@ router.delete('/:restaurantId/reviews/:reviewId', checkRestaurantExisit, async (
 
 // get endpoint to get a restaurant by id, check if the restaurant exists, then increment the view count and return the restaurant details
 
-router.get('/:resturantId', async (req: Request< resturantID: string>, res, next) => {   
 
-    const  {resturantId } = req.params;
-    try{
-        const client = await initializedRedisClient();
-        const restaurantKey = resturantKeyById(resturantId);
-        const [viewCount, restaurant] = await Promise.all([client.hIncrBy(restaurantKey, 'viewCount', 1), client.hGetAll(restaurantKey)]);
-        return successResponse(res, restaurant);
-    } catch(error) {
-        next(error);
-    }   
-});
 
 export default router;
