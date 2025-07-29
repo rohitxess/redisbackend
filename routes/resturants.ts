@@ -16,17 +16,24 @@ const router = express.Router();
 
 router.post('/', validate(ResturantSchema), async (res, req, next) => {
     const data = req.body as Restaurant;
+
     try{
         const client = await initializedRedisClient();
-        const resturantKey = resturantKeyById(restaurantId);
+        const id = nanoid();
+        const resturantKey = resturantKeyById(id);
         const hashdata = {id, name: data.name, location: data.location};
+
         await Promise.all[
-            ...data.cuisines.map(cuisine => Promise.all([
+            ...data.cuisines.map((cuisine) => Promise.all([
                 client.sAdd(cuisinesKey, cuisine),
                 client.sAdd(cuisineKey(cuisine), id),
                 client.sAdd(restaurantCuisinesKeyById(id), cuisine)
-            ]),)
-            client.hSet(resturantKey, hashdata]);
+            ])),
+            client.hSet(resturantKey, hashdata);
+            client.zAdd(restarurantByRatingKey,{
+                score: 0,
+                value: id,
+            })
 
         return successResponse(res, hashData, 'Added new restaurant');
 
@@ -70,7 +77,7 @@ router.post('/:restaurantId/reviews', checkRestaurantExisit, validate(ReviewSche
             restaurantId, 
         };
         // this will store the review id in the list of reviews for the restaurant
-        await Promise.all([
+       const [] = await Promise.all([
             client.lPush(reviewKey, reviewId),
             client.hSet(reviewDetailsKey, reviewData),
         ])
